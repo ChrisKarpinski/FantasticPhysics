@@ -33,7 +33,8 @@ public class QuizQuestions : MonoBehaviour {
         SelectNextQuestion();
         
     }
-    
+
+
     void Update()
     {
         Text option1 = GameObject.Find("Option 1").GetComponent<Text>();
@@ -53,6 +54,7 @@ public class QuizQuestions : MonoBehaviour {
         option3.text = textArray[2];
         option4.text = textArray[3];
 
+        
 
     }
 
@@ -100,6 +102,7 @@ public class QuizQuestions : MonoBehaviour {
                 MessageBox.Show(SelectNextQuestion, "You answered incorrectly, the correct answer was: "
                     + correctOption, "Incorrect", MessageBoxButtons.OK);
             }
+            GameObject.Find("Title").GetComponent<AudioSource>().Play();
         }
 
 

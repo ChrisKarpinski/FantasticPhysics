@@ -21,7 +21,7 @@ public class CreditsRoll : MonoBehaviour {
                 if (!(singleText.name == "Credits" || singleText.name == "Pause Text"))
                     singleText.transform.Translate(new Vector3(0, 1));
 
-                if (singleText.transform.position.y > 435)
+                if (singleText.transform.position.y > 770)
                     singleText.transform.position = new Vector2(Screen.width / 2, -10);
             }
         }
