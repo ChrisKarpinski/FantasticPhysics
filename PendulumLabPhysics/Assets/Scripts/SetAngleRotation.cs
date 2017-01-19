@@ -25,11 +25,12 @@ public class SetAngleRotation : MonoBehaviour {
     float kineticEnergy = 0;
     float potentialEnergy = 0;
     float mechanicalEnergy = 0;
-    //public GameObject angle;
+    public GameObject angle;
     // Use this for initialization
     void Start() {
         hinge = GameObject.Find("string").GetComponent<HingeJoint2D>();
-        //originalHeight = GameObject.Find("pendulum").GetComponent<RectTransform>().position.y;
+        angle = GameObject.Find("Angle Slider");
+        originalHeight = GameObject.Find("pendulum").GetComponent<RectTransform>().position.y;
         DisablePhysics();
     }
 
@@ -46,7 +47,7 @@ public class SetAngleRotation : MonoBehaviour {
         //Debug.Log(originalHeight + ", " + Input.mousePosition.y + ", " + GameObject.Find("pendulum").GetComponent<RectTransform>().position.y.ToString("F5"));
         //Debug.Log(GameObject.Find("pendulum").GetComponent<Rigidbody2D>().mass);
         //Debug.Log(GameObject.Find("string").GetComponent<Rigidbody2D>().velocity.magnitude + ", " + angle.GetComponent<Slider>().value);
-        Debug.Log(simulationOn);
+        Debug.Log(Time.timeScale);
         //Debug.Log((GameObject.Find("pendulum").GetComponent<RectTransform>().position.y - originalHeight)*124/232);
         //Debug.Log(GameObject.Find("string").GetComponent<Rigidbody2D>().velocity.sqrMagnitude);
         //Debug.Log(0.5*GameObject.Find("pendulum").GetComponent<Rigidbody2D>().angularVelocity);
@@ -91,7 +92,7 @@ public class SetAngleRotation : MonoBehaviour {
 
 
         if ((GameObject.Find("string").GetComponent<Rigidbody2D>().velocity.magnitude/100 < 0.1 || (GameObject.Find("string").GetComponent<Rigidbody2D>().velocity.magnitude < 30 
-            && timeValue > 45)) && period == 0
+            && angle.GetComponent<Slider>().value > 45)) && period == 0
             && GameObject.Find("string").GetComponent<RectTransform>().rotation.z > 0 && timeValue > 1
             && GameObject.Find("Demo Text").GetComponent<Text>().text != "Continue" && simulationOn)
         {
@@ -121,6 +122,22 @@ public class SetAngleRotation : MonoBehaviour {
             GameObject.Find("pendulum").GetComponent<AudioSource>().Play();
         }
 
+        if (GameObject.Find("Demo Text").GetComponent<Text>().text == "Pause Demo")
+        {
+            simulationOn = true;
+        }
+        else
+        {
+            simulationOn = false;
+        }
+
+        if (hinge.useLimits)
+        {
+            timeValue = 0;
+            potentialEnergy = 0;
+            period = 0;
+        }
+
     }
 
     public void OnApply ()
@@ -137,7 +154,6 @@ public class SetAngleRotation : MonoBehaviour {
     public void EnablePhysics ()
     {
         // this enables the physics and controls the on and off phases of the simulation
-        simulationOn = true;
         Text demoButtonText = GameObject.Find("Demo Text").GetComponent<Text>();
         DisableSliders();
         GameObject.Find("No Slider").GetComponent<Text>().enabled = true;
