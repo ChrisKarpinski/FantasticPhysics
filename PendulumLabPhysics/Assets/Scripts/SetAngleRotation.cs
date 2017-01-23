@@ -25,7 +25,9 @@ public class SetAngleRotation : MonoBehaviour {
     float kineticEnergy = 0;
     float potentialEnergy = 0;
     float mechanicalEnergy = 0;
+    float lengthSlider = 1;
     public GameObject angle;
+
     // Use this for initialization
     void Start() {
         Physics2D.gravity = new Vector2(0, -9.81f * 190);
@@ -33,6 +35,7 @@ public class SetAngleRotation : MonoBehaviour {
         angle = GameObject.Find("Angle Slider");
         originalHeight = GameObject.Find("pendulum").GetComponent<RectTransform>().position.y;
         DisablePhysics();
+        hinge.useLimits = true; // using hinge limits to straighten out the pendulum at the start
     }
 
     void Update() {
@@ -42,20 +45,11 @@ public class SetAngleRotation : MonoBehaviour {
         Text kineticText = GameObject.Find("Kinetic Text").GetComponent<Text>();
         Text potentialText = GameObject.Find("Potential Text").GetComponent<Text>();
         Text totalEnergy = GameObject.Find("Total Energy").GetComponent<Text>();
-
-        //Debug.Log(Input.mousePosition.x + ", " + Input.mousePosition.y);
-        //Debug.Log(GameObject.Find("string").GetComponent<Rigidbody2D>().velocity + ", " + savedVelocity);
-        //Debug.Log(originalHeight + ", " + Input.mousePosition.y + ", " + GameObject.Find("pendulum").GetComponent<RectTransform>().position.y.ToString("F5"));
-        //Debug.Log(GameObject.Find("pendulum").GetComponent<Rigidbody2D>().mass);
-        //Debug.Log(GameObject.Find("string").GetComponent<Rigidbody2D>().velocity.magnitude + ", " + angle.GetComponent<Slider>().value);
-        //Debug.Log((GameObject.Find("pendulum").GetComponent<RectTransform>().position.y - originalHeight)*124/232);
-        //Debug.Log(GameObject.Find("string").GetComponent<Rigidbody2D>().velocity.magnitude);
-        Debug.Log(originalHeight);
-        //Debug.Log(0.5*GameObject.Find("pendulum").GetComponent<Rigidbody2D>().angularVelocity);
-        //Debug.Log(Input.mousePosition.y);
-        //Debug.Log((Mathf.Pow(124,2)/Mathf.Pow(232,2))/2);
-        //Debug.Log(GameObject.Find("string").GetComponent<HingeJoint2D>().)
         
+        if (GameObject.Find("Length Slider").GetComponent<Slider>().enabled)
+        {
+            lengthSlider = GameObject.Find("Length Slider").GetComponent<Slider>().value;
+        }
 
         if (simulationOn)
         {
@@ -136,7 +130,11 @@ public class SetAngleRotation : MonoBehaviour {
             timeValue = 0;
             potentialEnergy = 0;
             period = 0;
+            mechanicalEnergy = 0;
         }
+
+        originalHeight = 300f - (222.5f * lengthSlider - 222.5f); // finding the rest height of the pendulum for potential energy
+        // original height based off relationships with the anchor at minimal pendulum length and pendulum extension value
 
     }
 
@@ -231,14 +229,14 @@ public class SetAngleRotation : MonoBehaviour {
         GameObject stringLength = GameObject.Find("string");
         GameObject pendulum = GameObject.Find("pendulum");
         Text lengthText = GameObject.Find("Length val").GetComponent<Text>();
-        float lengthSlider = GameObject.Find("Length Slider").GetComponent<Slider>().value;
+        lengthSlider = GameObject.Find("Length Slider").GetComponent<Slider>().value;
         //stringLength.transform.DetachChildren();
         stringLength.transform.localScale = new Vector3(1, lengthSlider, 0);
         // stretches out the string length by the slider factor
         pendulum.transform.localScale = new Vector3(1, 1/lengthSlider);
         // stretches the pendulum bob by the inverse of the length slider to preserve its shape
         // (since we only need the string to be stretched and not the mass).
-        originalHeight = 295.6f - (225.5f * lengthSlider - 225.5f);
+        
         lengthText.text = lengthSlider.ToString("F2") + " m";
         
         // get the starting height of the pendulum by subtracting the change in length of the string

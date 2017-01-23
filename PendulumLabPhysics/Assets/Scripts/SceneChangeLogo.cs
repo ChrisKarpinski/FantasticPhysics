@@ -1,13 +1,19 @@
-﻿using UnityEngine;
+﻿/****************************************************************************
+*
+* Created by: Chris Karpinski
+* Created on: Jan 2017
+* This script displays the app logo for 2 seconds 
+*
+****************************************************************************/
+
+using UnityEngine;
 using System.Collections;
 
 public class SceneChangeLogo : MonoBehaviour {
 
     IEnumerator ChangingScene()
     {
-        Debug.Log("Before waiting 2 seconds");
         yield return new WaitForSeconds(2);
-        Debug.Log("After waiting 2 seconds");
         Application.LoadLevel("MainMenu");
 
     }

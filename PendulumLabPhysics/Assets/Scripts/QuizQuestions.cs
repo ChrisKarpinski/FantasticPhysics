@@ -1,4 +1,13 @@
-﻿using UnityEngine;
+﻿/****************************************************************************
+*
+* Created by: Chris Karpinski
+* Created on: Jan 2017
+* This scene is a quiz to test the knowledge of each of the labs
+* I'm using an imported MessageBox asset in this scene that I purchased online
+*
+****************************************************************************/
+
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -6,21 +15,27 @@ using CorruptedSmileStudio.MessageBox;
 
 public class QuizQuestions : MonoBehaviour {
     
+    // fields 
     string optionSelected;
-    List<int> levels = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    List<int> levels = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
     const int OPTION_NUMBER = 4;
+    const int INITIAL_QUESTION_NUMBER = 15;
     string [] textArray  = new string [OPTION_NUMBER];
     int score = 0;
     int questionsAnswered = 0;
     int currentLevel;
     string correctOption;
     Text questionTitle;
-    
+    float originalHeight = 768;
+    float originalWidth = 1024;
+    // original screen resolution for re-scaling GUI buttons
+    Vector3 scale;
 
     // Use this for initialization
 
     enum Options
     {
+        // enum for the options 
         A,
         B,
         C,
@@ -37,6 +52,7 @@ public class QuizQuestions : MonoBehaviour {
 
     void Update()
     {
+        // display all the text and score
         Text option1 = GameObject.Find("Option 1").GetComponent<Text>();
         Text option2 = GameObject.Find("Option 2").GetComponent<Text>();
         Text option3 = GameObject.Find("Option 3").GetComponent<Text>();
@@ -60,7 +76,16 @@ public class QuizQuestions : MonoBehaviour {
 
     void OnGUI ()
     {
+        // all of the code done with scales and matrices is to re-scale the GUI to any screen size
+        scale.x = Screen.width / originalWidth; // calculate hor scale
+        scale.y = Screen.height / originalHeight; // calculate vert scale
+        scale.z = 1;
+        Matrix4x4 svMat = GUI.matrix; // save current matrix
+                                // substitute matrix - only scale is altered from standard
+        GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, scale);
         GUI.skin.button.fontSize = 20;
+
+        // GUI buttons for the options
         if (GUI.Button(new Rect(50, 350, 100, 70), "A"))
         {
 
@@ -89,41 +114,47 @@ public class QuizQuestions : MonoBehaviour {
 
         if (GUI.changed)
         {
-            if (questionsAnswered < 10)
+            if (questionsAnswered < INITIAL_QUESTION_NUMBER)
             {
                 questionsAnswered++;
             }
             if (CheckCorrect(optionSelected, correctOption))
             {
                 MessageBox.Show(SelectNextQuestion, "You got the question correct! + 1 score!", "Correct!", MessageBoxButtons.OK);
+                // message box for correct answer
             }
             else
             {
                 MessageBox.Show(SelectNextQuestion, "You answered incorrectly, the correct answer was: "
-                    + correctOption, "Incorrect", MessageBoxButtons.OK);
+                    + correctOption, "Incorrect", MessageBoxButtons.OK); // message box for incorrect answer
             }
             GameObject.Find("Title").GetComponent<AudioSource>().Play();
         }
 
+        // restore matrix before returning
+        GUI.matrix = svMat; // restore matrix
+        
 
     }
 
 	void Shuffle (ref string [] array)
     {
-            int n = array.Length;
-            while (n > 1)
+        // shuffles the options so that they dont always appear in the same position
+            int lastArrayValue = array.Length;
+            while (lastArrayValue > 1)
             {
                 new Random();
-                int k = Random.Range(0, n--);
-                string temp = array[n];
-                array[n] = array[k];
-                array[k] = temp;
+                int newIndex = Random.Range(0, lastArrayValue--);
+                string temp = array[lastArrayValue];
+                array[lastArrayValue] = array[newIndex];
+                array[newIndex] = temp;
             }
     
     }
 	
     bool CheckCorrect (string optionSelected, string correctOption)
     {
+        // checks if the level is correct
         levels.Remove(currentLevel);
         if (optionSelected == correctOption)
         {
@@ -139,6 +170,7 @@ public class QuizQuestions : MonoBehaviour {
 
     void SelectNextQuestion (DialogResult result)
     {
+        // selects the next question and is a callback for the MessageBox
         if (result == DialogResult.Ok)
         {
             SelectNextQuestion();
@@ -147,7 +179,7 @@ public class QuizQuestions : MonoBehaviour {
 
     void SelectNextQuestion()
     {
-
+        // select the next question
         if (levels.Count > 0)
         {
             new Random();
@@ -156,6 +188,7 @@ public class QuizQuestions : MonoBehaviour {
 
             switch (currentLevel)
             {
+                // sets the question and options for each question
                 case 1:
                     questionTitle.text = "Which of the following is correct for a pendulum?";
                     textArray[0] = "Period is proportional to length";
@@ -249,10 +282,56 @@ public class QuizQuestions : MonoBehaviour {
                     Shuffle(ref textArray);
                     correctOption = ((Options)System.Array.IndexOf(textArray, "Increases both the maximum kinetic energy AND mechanical energy")).ToString();
                     break;
+                case 11:
+                    questionTitle.text = "The normal force on an object can effectively be thought of as what?";
+                    textArray[0] = "The force of the surface pushing against the object";
+                    textArray[1] = "The force of friction";
+                    textArray[2] = "The net force on the object";
+                    textArray[3] = "The force of gravity";
+                    Shuffle(ref textArray);
+                    correctOption = ((Options)System.Array.IndexOf(textArray, "The force of the surface pushing against the object")).ToString();
+                    break;
+                case 12:
+                    questionTitle.text = "What is the relationship between the force of friction (Ff) and the normal force (Fn)?";
+                    textArray[0] = "Ff = FN*g";
+                    textArray[1] = "Ff = FN*Fg";
+                    textArray[2] = "Ff = FN * coeff of friction";
+                    textArray[3] = "Ff = FN";
+                    Shuffle(ref textArray);
+                    correctOption = ((Options)System.Array.IndexOf(textArray, "Ff = FN * coeff of friction")).ToString();
+                    break;
+                case 13:
+                    questionTitle.text = "Which pairs of forces are always directed opposite to each other?";
+                    textArray[0] = "Fg and FN";
+                    textArray[1] = "Ff and FNet";
+                    textArray[2] = "Ff and FNet";
+                    textArray[3] = "Fg and Ff";
+                    Shuffle(ref textArray);
+                    correctOption = ((Options)System.Array.IndexOf(textArray, "Ff and FNet")).ToString();
+                    break;
+                case 14:
+                    questionTitle.text = "Which of Newton's laws states that F = ma?";
+                    textArray[0] = "1st";
+                    textArray[1] = "2nd";
+                    textArray[2] = "3rd";
+                    textArray[3] = "4th";
+                    Shuffle(ref textArray);
+                    correctOption = ((Options)System.Array.IndexOf(textArray, "2nd")).ToString();
+                    break;
+                case 15:
+                    questionTitle.text = "What happens to the frictional force as the incline angle increases?";
+                    textArray[0] = "Increases";
+                    textArray[1] = "Stays the same because the coefficient of friction is unchanged";
+                    textArray[2] = "Decreases because the coefficient of friction decreases";
+                    textArray[3] = "Decreases because the normal force decreases";
+                    Shuffle(ref textArray);
+                    correctOption = ((Options)System.Array.IndexOf(textArray, "Decreases because the normal force decreases")).ToString();
+                    break;
 
             }
 
-            if (currentLevel == 7 || currentLevel == 8 || currentLevel == 9 || currentLevel == 10)
+            // adjust the font size of questions that are longer than others
+            if (currentLevel == 7 || currentLevel == 8 || currentLevel == 9 || currentLevel == 10 || currentLevel == 12)
             {
                 questionTitle.fontSize = 22;
             }
@@ -264,12 +343,14 @@ public class QuizQuestions : MonoBehaviour {
         }
         else
         {
-            MessageBox.Show(ExitCallBack, "You have finished all the levels. Your result is: " + score + " / " + levels.Count, "Finished", MessageBoxButtons.OK);
+            MessageBox.Show(ExitCallBack, "You have finished all the levels. Your result is: " + score + " / " + INITIAL_QUESTION_NUMBER, "Finished", MessageBoxButtons.OK);
+            // display the message box saying the levels have been finished
         }
     }
 
     void ExitCallBack (DialogResult result) 
     {
+        // callback to exit the scene once all of the questions have been completed
         if (result == DialogResult.Ok)
         {
             Application.LoadLevel("MainMenu");
