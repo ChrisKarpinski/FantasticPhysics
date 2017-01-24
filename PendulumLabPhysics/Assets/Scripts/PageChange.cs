@@ -41,6 +41,7 @@ public class PageChange : MonoBehaviour {
 
         switch (page)
         {
+            // switching through the pages
             case 1:
                 image1.enabled = true;
                 image2.enabled = false;
@@ -94,6 +95,7 @@ public class PageChange : MonoBehaviour {
 
         if (textDisabled)
         {
+            // disables the explanation text
             foreach (Text singleText in GameObject.FindObjectsOfType<Text>())
             {
                 if (singleText.name != "Title" && singleText.name != "Text")
@@ -106,6 +108,7 @@ public class PageChange : MonoBehaviour {
         {
             foreach (Text singleText in GameObject.FindObjectsOfType<Text>())
             {
+                // re-enables the explanation text
                 if (singleText.name != "Title" && singleText.name != "Text")
                 {
                     singleText.enabled = true;

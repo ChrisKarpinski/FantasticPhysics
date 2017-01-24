@@ -21,13 +21,14 @@ public class QuizQuestions : MonoBehaviour {
     const int OPTION_NUMBER = 4;
     const int INITIAL_QUESTION_NUMBER = 15;
     string [] textArray  = new string [OPTION_NUMBER];
-    int score = 0;
-    int questionsAnswered = 0;
-    int currentLevel;
-    string correctOption;
+    private int score = 0;
+    private int questionsAnswered = 0;
+    private int currentLevel;
+    private string correctOption;
     Text questionTitle;
     float originalHeight = 768;
     float originalWidth = 1024;
+    bool optionChosen = false;
     // original screen resolution for re-scaling GUI buttons
     Vector3 scale;
 
@@ -59,8 +60,7 @@ public class QuizQuestions : MonoBehaviour {
         Text option4 = GameObject.Find("Option 4").GetComponent<Text>();
         Text questionNum = GameObject.Find("Question Number").GetComponent<Text>();
         Text scoreValue = GameObject.Find("Score Value").GetComponent<Text>();
-        Debug.Log(optionSelected + ", " + correctOption + ", " + score);
-
+        
         scoreValue.text = score + " / " + questionsAnswered;
         
         questionNum.text = (questionsAnswered + 1).ToString();
@@ -76,6 +76,7 @@ public class QuizQuestions : MonoBehaviour {
 
     void OnGUI ()
     {
+        
         // all of the code done with scales and matrices is to re-scale the GUI to any screen size
         scale.x = Screen.width / originalWidth; // calculate hor scale
         scale.y = Screen.height / originalHeight; // calculate vert scale
@@ -85,48 +86,54 @@ public class QuizQuestions : MonoBehaviour {
         GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, scale);
         GUI.skin.button.fontSize = 20;
 
-        // GUI buttons for the options
-        if (GUI.Button(new Rect(50, 350, 100, 70), "A"))
-        {
+        
+            // GUI buttons for the options
+            if (GUI.Button(new Rect(50, 350, 100, 70), "A"))
+            {
 
-            optionSelected = "A";
+                optionSelected = "A";
+                
+            }
 
-        }
+            if (GUI.Button(new Rect(50, 450, 100, 70), "B"))
+            {
+                optionSelected = "B";
+               
+            }
 
-        if (GUI.Button(new Rect(50, 450, 100, 70), "B"))
-        {
-            optionSelected = "B";
+            if (GUI.Button(new Rect(50, 550, 100, 70), "C"))
+            {
+                optionSelected = "C";
+                
+            }
 
-        }
+            if (GUI.Button(new Rect(50, 650, 100, 70), "D"))
+            {
+                optionSelected = "D";
 
-        if (GUI.Button(new Rect(50, 550, 100, 70), "C"))
-        {
-            optionSelected = "C";
-
-        }
-
-        if (GUI.Button(new Rect(50, 650, 100, 70), "D"))
-        {
-            optionSelected = "D";
-
-
-        }
-
+               
+            }
+        
         if (GUI.changed)
         {
-            if (questionsAnswered < INITIAL_QUESTION_NUMBER)
+            if (!optionChosen)
             {
-                questionsAnswered++;
-            }
-            if (CheckCorrect(optionSelected, correctOption))
-            {
-                MessageBox.Show(SelectNextQuestion, "You got the question correct! + 1 score!", "Correct!", MessageBoxButtons.OK);
-                // message box for correct answer
-            }
-            else
-            {
-                MessageBox.Show(SelectNextQuestion, "You answered incorrectly, the correct answer was: "
-                    + correctOption, "Incorrect", MessageBoxButtons.OK); // message box for incorrect answer
+                if (questionsAnswered < INITIAL_QUESTION_NUMBER)
+                {
+                    questionsAnswered++;
+                }
+                if (CheckCorrect(optionSelected, correctOption))
+                {
+                    MessageBox.Show(SelectNextQuestion, "You got the question correct! + 1 score!", "Correct!", MessageBoxButtons.OK);
+                    // message box for correct answer
+                }
+                else
+                {
+                    MessageBox.Show(SelectNextQuestion, "You answered incorrectly, the correct answer was: "
+                        + correctOption, "Incorrect", MessageBoxButtons.OK); // message box for incorrect answer
+                }
+                
+                optionChosen = true;
             }
             GameObject.Find("Title").GetComponent<AudioSource>().Play();
         }
@@ -158,6 +165,7 @@ public class QuizQuestions : MonoBehaviour {
         levels.Remove(currentLevel);
         if (optionSelected == correctOption)
         {
+            
             score++;
             return true;
         }
@@ -184,7 +192,7 @@ public class QuizQuestions : MonoBehaviour {
         {
             new Random();
             currentLevel = levels[Random.Range(0, levels.Count)];
-
+            optionChosen = false;
 
             switch (currentLevel)
             {
@@ -303,7 +311,7 @@ public class QuizQuestions : MonoBehaviour {
                 case 13:
                     questionTitle.text = "Which pairs of forces are always directed opposite to each other?";
                     textArray[0] = "Fg and FN";
-                    textArray[1] = "Ff and FNet";
+                    textArray[1] = "Ff and FN";
                     textArray[2] = "Ff and FNet";
                     textArray[3] = "Fg and Ff";
                     Shuffle(ref textArray);

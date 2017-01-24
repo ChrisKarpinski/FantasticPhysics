@@ -36,9 +36,14 @@ public class SetAngleRotation : MonoBehaviour {
         originalHeight = GameObject.Find("pendulum").GetComponent<RectTransform>().position.y;
         DisablePhysics();
         hinge.useLimits = true; // using hinge limits to straighten out the pendulum at the start
+        //GameObject.Find("string").GetComponent<HingeJoint2D>().connectedAnchor = GameObject.Find("Title").GetComponent<RectTransform>().position - new Vector3(50, 50);
+       // GameObject.Find("string").GetComponent<HingeJoint2D>().anchor = new Vector2(0, 113.05f);
     }
 
     void Update() {
+
+        
+
         Text timeText = GameObject.Find("Time Text").GetComponent<Text>();
         Text periodText = GameObject.Find("Period Text").GetComponent<Text>();
         Text periodLabel = GameObject.Find("Period").GetComponent<Text>();
